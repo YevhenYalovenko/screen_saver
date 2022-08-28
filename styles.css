@@ -1,0 +1,36 @@
+.elem {
+    position: fixed;
+    width: 50px;
+    height: 50px;
+
+}
+
+.two {
+    background-color: red;
+    top: 100px;
+    left: 200px;
+}
+
+.one {
+    background-color: blue;
+    top: 150px;
+    left: 200px;
+}
+
+.three {
+    background-color: green;
+    top: 100px;
+    left: 250px;
+}
+
+.four {
+    background-color: purple;
+    top: 300px;
+    left: 400px;
+}
+
+.five {
+    background-color: yellow;
+    top: 500px;
+    left: 100px;
+}
