@@ -5,6 +5,28 @@ const Directions = {
     BottomLeft: 3
 };
 
+class Hitter {
+    constructor(elemCoordinates) {
+        this.elemCoordinates = elemCoordinates;
+    }
+
+    get hitBotoom() {
+        return this.elemCoordinates.bottom >= window.innerHeight;
+    }
+
+    get hitRight() {
+        return this.elemCoordinates.right >= window.innerWidth;
+    }
+
+    get hitTop() {
+        return this.elemCoordinates.top <= 0;
+    }
+
+    get hitLeft() {
+        return this.elemCoordinates.left <= 0;
+    }
+}
+
 
 class ScreenSaver {
     constructor(element, options) {
@@ -30,15 +52,16 @@ class ScreenSaver {
         }, speed);
     }
 
+
     get direction() {
-        const cords = this.elemCoordinates;
+        const hitter = new Hitter(this.elemCoordinates);
 
         if (this.currentDirection === Directions.RightBottom) {
-            if (cords.bottom >= window.innerHeight) {
+            if (hitter.hitBotoom) {
                 this.currentDirection = Directions.TopRight;
                 return 'moveTopRight';
             }
-            if (cords.right >= window.innerWidth) {
+            if (hitter.hitRight) {
                 this.currentDirection = Directions.BottomLeft;
                 return 'moveBottomLeft';
             }
@@ -47,11 +70,11 @@ class ScreenSaver {
         }
 
         if (this.currentDirection === Directions.TopRight) {
-            if (cords.right >= window.innerWidth) {
+            if (hitter.hitRight) {
                 this.currentDirection = Directions.TopLeft;
                 return 'moveTopLeft';
             }
-            if (cords.top <= 0) {
+            if (hitter.hitTop) {
                 this.currentDirection = Directions.RightBottom;
                 return 'moveRightBottom';
             }
@@ -60,11 +83,11 @@ class ScreenSaver {
         }
 
         if (this.currentDirection === Directions.TopLeft) {
-            if (cords.top <= 0) {
+            if (hitter.hitTop) {
                 this.currentDirection = Directions.BottomLeft;
                 return 'moveBottomLeft';
             }
-            if (cords.left <= 0) {
+            if (hitter.hitLeft) {
                 this.currentDirection = Directions.TopRight;
                 return 'moveTopRight';
             }
@@ -73,11 +96,11 @@ class ScreenSaver {
         }
 
         if (this.currentDirection === Directions.BottomLeft) {
-            if (cords.left <= 0) {
+            if (hitter.hitLeft) {
                 this.currentDirection = Directions.RightBottom;
                 return 'moveRightBottom';
             }
-            if (cords.bottom >= window.innerHeight) {
+            if (hitter.hitBotoom) {
                 this.currentDirection = Directions.TopLeft;
                 return 'moveTopLeft';
             }
@@ -89,43 +112,23 @@ class ScreenSaver {
     }
 
     moveRightBottom(step) {
-        let [x, y] = this.coordinatesToMove;
-
-        x = x + step;
-        y = y + step;
-
-        this.coordinatesToMove = [x, y];
-
-        this.element.style.transform = `translate(${x}px, ${y}px)`;
+        this.move(([x, y]) => [x + step, y + step]);
     }
 
     moveTopRight(step) {
-        let [x, y] = this.coordinatesToMove;
-
-        x = x + step;
-        y = y - step;
-
-        this.coordinatesToMove = [x, y];
-
-        this.element.style.transform = `translate(${x}px, ${y}px)`;
+        this.move(([x, y]) => [x + step, y - step]);
     }
 
     moveTopLeft(step) {
-        let [x, y] = this.coordinatesToMove;
-
-        x = x - step;
-        y = y - step;
-
-        this.coordinatesToMove = [x, y];
-
-        this.element.style.transform = `translate(${x}px, ${y}px)`;
+        this.move(([x, y]) => [x - step, y - step]);
     }
 
     moveBottomLeft(step) {
-        let [x, y] = this.coordinatesToMove;
+        this.move(([x, y]) => [x - step, y + step]);
+    }
 
-        x = x - step;
-        y = y + step;
+    move(increaseCoordinates) {
+        let [x, y] = increaseCoordinates(this.coordinatesToMove);
 
         this.coordinatesToMove = [x, y];
 
