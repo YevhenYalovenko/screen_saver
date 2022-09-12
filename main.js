@@ -90,6 +90,7 @@ class ScreenSaver {
       this[this.currentDirection](step);
 
     }, speed);
+
   }
 
   get direction() {
@@ -121,15 +122,26 @@ class ScreenSaver {
   }
 }
 
-document.body.addEventListener('click', (event) => {
-  event.preventDefault();
-  event.stopPropagation();
+function moveElement (event) {
   const element = event.target;
 
   const screenSaver = new ScreenSaver(element, {
     speed: 10,
     step: 1
   });
-
   screenSaver.startMove();
-});
+  
+  document.body.addEventListener ('click', () => {
+    if (screenSaver) {
+        document.body.removeEventListener('click', moveElement);
+    }
+
+   
+    
+  });
+
+}
+
+document.body.addEventListener('click', moveElement);
+
+
