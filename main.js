@@ -90,6 +90,7 @@ class ScreenSaver {
       this[this.currentDirection](step);
 
     }, speed);
+
   }
 
   get direction() {
@@ -121,15 +122,40 @@ class ScreenSaver {
   }
 }
 
-document.body.addEventListener('click', (event) => {
-  event.preventDefault();
-  event.stopPropagation();
-  const element = event.target;
+class ScreenSaverRunner {
+  elements = [];
 
-  const screenSaver = new ScreenSaver(element, {
-    speed: 10,
-    step: 1
-  });
+  constructor(speed, step) {
+    this.speed = speed;
+    this.step = step;
+  }
 
-  screenSaver.startMove();
-});
+  run() {
+    document.body.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      const element = event.target;
+
+      if (!this.elements.includes(element)) {
+        const screenSaver = this.createScreenSaver(element);
+
+        screenSaver.startMove();
+      }
+    });
+  }
+
+  createScreenSaver(element) {
+    this.elements.push(element);
+
+    return new ScreenSaver(element, {
+      speed: this.speed,
+      step: this.step
+    });
+  }
+}
+
+const runner = new ScreenSaverRunner(10, 1);
+
+runner.run();
+
+
