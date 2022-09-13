@@ -93,6 +93,10 @@ class ScreenSaver {
 
   }
 
+  stopMove() {
+    clearInterval(this.interval);
+  }
+
   get direction() {
     return DirectionsSettings[this.currentDirection](new Hitter(this.elemCoordinates));
   }
@@ -140,7 +144,14 @@ class ScreenSaverRunner {
         const screenSaver = this.createScreenSaver(element);
 
         screenSaver.startMove();
-      }
+        if (this.elements.includes(element)) {
+          this.elements.forEach(() => {
+            element.addEventListener('click', () => {
+              screenSaver.stopMove();
+            });
+          });
+         }
+      } 
     });
   }
 
@@ -153,6 +164,7 @@ class ScreenSaverRunner {
     });
   }
 }
+
 
 const runner = new ScreenSaverRunner(10, 1);
 
