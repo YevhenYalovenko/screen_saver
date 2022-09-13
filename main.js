@@ -73,6 +73,8 @@ class ScreenSaver {
     this.options = options;
   }
 
+  #isRunning = false;
+
   interval;
 
   coordinatesToMove = [0, 0];
@@ -88,13 +90,21 @@ class ScreenSaver {
     this.interval = setInterval(() => {
       this.currentDirection = this.direction;
       this[this.currentDirection](step);
-
     }, speed);
+    this.#isRunning = true;
+  }
 
+  stopMove() {
+    clearInterval(this.interval);
+    this.#isRunning = false;
   }
 
   get direction() {
     return DirectionsSettings[this.currentDirection](new Hitter(this.elemCoordinates));
+  }
+
+  get isRunning() {
+    return this.#isRunning;
   }
 
   moveRightBottom(step) {
@@ -123,7 +133,7 @@ class ScreenSaver {
 }
 
 class ScreenSaverRunner {
-  elements = [];
+  runningElements = [];
 
   constructor(speed, step) {
     this.speed = speed;
@@ -135,22 +145,29 @@ class ScreenSaverRunner {
       event.preventDefault();
       event.stopPropagation();
       const element = event.target;
+      const runningElement = this.runningElements.find(elem => elem.element === element);
 
-      if (!this.elements.includes(element)) {
+      if (!runningElement) {
         const screenSaver = this.createScreenSaver(element);
 
         screenSaver.startMove();
+      } else {
+        const {screenSaver} = runningElement;
+
+        screenSaver.isRunning ? screenSaver.stopMove() : screenSaver.startMove();
       }
     });
   }
 
   createScreenSaver(element) {
-    this.elements.push(element);
-
-    return new ScreenSaver(element, {
+    const screenSaver =  new ScreenSaver(element, {
       speed: this.speed,
       step: this.step
     });
+
+    this.runningElements.push({element, screenSaver});
+
+    return screenSaver;
   }
 }
 
