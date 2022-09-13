@@ -171,7 +171,6 @@ class ScreenSaverRunner {
   }
 }
 
-
 const runner = new ScreenSaverRunner(10, 1);
 
 runner.run();
